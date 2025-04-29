@@ -14,11 +14,11 @@ mqtt_stream.add_mqtt_attribute("mqtt_volume", "long")
 stream_definition = mqtt_stream.defineStreamString()
 print(stream_definition);
 SIDDHI_APP = (
-    stream_definition + "; "
+    stream_definition + " "
 
     "@info(name = 'query1') "
-    "from cseEventStream[volume < 150] "
-    "select symbol,price insert into outputStream;"
+    "from cseEventStream[mqtt_volume < 150] "
+    "select mqtt_symbol,mqtt_price insert into outputStream;"
 )
 
 
@@ -32,9 +32,9 @@ SIDDHI_APP = (
 def main():
     manager = SiddhiAppManager(SIDDHI_APP)
     manager.add_callback("query1", QueryCallbackImpl())
-    input_handler = manager.get_input_handler("cseEventStream")
+    input_handler = manager.get_input_handler(mqtt_stream.stream_name)
 
-    sender = EventSender(input_handler)
+    sender = EventSender(input_handler, mqtt_stream)
 
     manager.start()
     sender.send_events()

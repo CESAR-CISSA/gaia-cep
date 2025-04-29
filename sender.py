@@ -1,7 +1,11 @@
 from PySiddhi.DataTypes.LongType import LongType
+from PySiddhi.DataTypes.DoubleType import DoubleType
+
+
+from mqtt_stream import MQTTStream
 
 class EventSender:
-    def __init__(self, input_handler, stream: 'MQTTStream'):
+    def __init__(self, input_handler, stream: MQTTStream):
         self.input_handler = input_handler
         self.stream = stream
 
