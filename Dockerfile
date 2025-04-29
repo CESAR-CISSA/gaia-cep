@@ -27,4 +27,6 @@ RUN python3 -m venv venv \
     && ./venv/bin/pip install -r app/requirements.txt
 
 # Executa a aplicação
-CMD ["./venv/bin/python", "app/main.py"]
+# CMD ["./venv/bin/python", "app/main.py"]
+# Executa a aplicação
+CMD ["./venv/bin/python", "app/app.py"]
