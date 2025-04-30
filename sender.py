@@ -1,6 +1,7 @@
+import csv
 from PySiddhi.DataTypes.LongType import LongType
-from PySiddhi.DataTypes.DoubleType import DoubleType
-
+import asyncio
+from typing import Dict
 
 from mqtt_stream import MQTTStream
 
@@ -11,27 +12,56 @@ class EventSender:
 
     def send_events(self):
         """
-        Envia eventos com base na definição de atributos da stream.
-        Os valores são definidos manualmente aqui como exemplo.
+        Envia eventos fixos com base nos atributos definidos (modo de teste).
         """
-        # Lista de eventos simulados com os valores na ordem dos atributos definidos
         sample_values = [
-            ["IBM", 700.0, 100],
-            ["WSO2", 60.5, 200],
-            ["GOOG", 50.0, 30],
-            ["IBM", 76.6, 400],
-            ["WSO2", 45.6, 50],
+            [1, 700, 1],
+            [2, 60, 2],
+            [3, 50, 0],
+            [4, 76, 1],
+            [5, 45, 2],
         ]
 
-        attribute_order = self.stream.get_attribute_names()
+        attribute_order = self._get_attribute_order()
 
         for values in sample_values:
-            event = []
-            for idx, attr_name in enumerate(attribute_order):
-                tipo = self.stream.get_attribute_type(attr_name)
-                val = values[idx]
-                if tipo == "long":
-                    event.append(LongType(val))
-                else:
-                    event.append(val)
+            event = self._format_event(attribute_order, values)
             self.input_handler.send(event)
+
+    def _get_attribute_order(self):
+        return [name for name in self.stream.get_attributes().keys() if name.startswith("mqtt_")]
+
+    def _format_event(self, attribute_order, values):
+        """Formata um evento de acordo com os tipos definidos."""
+        event = []
+        for idx, attr_name in enumerate(attribute_order):
+            tipo = self.stream.get_attributes()[attr_name]
+            val = values[idx]
+            if tipo == "long":
+                if val == '':
+                    continue
+                else:
+                    event.append(LongType(int(float(val))))
+            else:
+                event.append(val)
+        return event
+
+    async def send_event_from_csv(self, csv_path: str):
+        """
+        Lê o CSV linha por linha de forma assíncrona e envia eventos ao Siddhi.
+        """
+        attribute_order = self._get_attribute_order()
+
+        with open(csv_path, newline='') as csvfile:
+            reader = csv.DictReader(csvfile)
+            for row in reader:
+                print(row)
+                values = [row[field] for field in attribute_order]
+                event = self._format_event(attribute_order, values)
+                self.input_handler.send(event)
+                await asyncio.sleep(0)  # Yield para o event loop
+
+    def _count_records(self, csv_path: str) -> int:
+        """Conta o número de registros no CSV, ignorando o cabeçalho."""
+        with open(csv_path, newline='') as csvfile:
+            return sum(1 for _ in csvfile) - 1

@@ -46,7 +46,9 @@ class MQTTStream:
         atributos_str = ", ".join(stream_def_parts)
         return f"define stream {self.stream_name}({atributos_str});"
 
-    
+    def get_attributes(self):
+        return self.__attribute_types
+
     def get_attribute_names(self):
         return list(self.__attribute_types.keys())
 
