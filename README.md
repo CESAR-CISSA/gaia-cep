@@ -52,8 +52,8 @@ The current implementation:
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/yourusername/gaia-cep-app.git
-cd gaia-cep-app
+git clone https://github.com/yourusername/gaia-cep.git
+cd gaia-cep
 ```
 
 2. Install dependencies:
