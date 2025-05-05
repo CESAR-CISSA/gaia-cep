@@ -1,5 +1,6 @@
 from enum import Enum
 
+from stream_schema import StreamSchema
 
 class SiddhiType(str, Enum):
     STRING = "string"
@@ -10,7 +11,7 @@ class SiddhiType(str, Enum):
     BOOL = "bool"
 
 
-class MQTTStream:
+class MQTTStream(StreamSchema):
     def __init__(self, stream_name: str):
         self.stream_name = stream_name
         self.__attribute_types = {}  # Dicionário privado
@@ -54,3 +55,6 @@ class MQTTStream:
 
     def get_attribute_type(self, attr_name: str):
         return self.__attribute_types.get(attr_name, "string")
+
+    def has_attribute(self, name: str) -> bool:
+        return name in self.__attribute_types

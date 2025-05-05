@@ -1,7 +1,7 @@
 import csv
 from PySiddhi.DataTypes.LongType import LongType
 import asyncio
-from typing import Dict
+# from typing import Dict
 
 from mqtt_stream import MQTTStream
 
@@ -10,26 +10,8 @@ class EventSender:
         self.input_handler = input_handler
         self.stream = stream
 
-    def send_events(self):
-        """
-        Envia eventos fixos com base nos atributos definidos (modo de teste).
-        """
-        sample_values = [
-            [1, 700, 1],
-            [2, 60, 2],
-            [3, 50, 0],
-            [4, 76, 1],
-            [5, 45, 2],
-        ]
-
-        attribute_order = self._get_attribute_order()
-
-        for values in sample_values:
-            event = self._format_event(attribute_order, values)
-            self.input_handler.send(event)
-
     def _get_attribute_order(self):
-        return [name for name in self.stream.get_attributes().keys() if name.startswith("mqtt_")]
+        return [name for name in self.stream.get_attributes().keys()]
 
     def _format_event(self, attribute_order, values):
         """Formata um evento de acordo com os tipos definidos."""
@@ -55,7 +37,6 @@ class EventSender:
         with open(csv_path, newline='') as csvfile:
             reader = csv.DictReader(csvfile)
             for row in reader:
-                print(row)
                 values = [row[field] for field in attribute_order]
                 event = self._format_event(attribute_order, values)
                 self.input_handler.send(event)

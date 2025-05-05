@@ -13,6 +13,7 @@ ENV PATH=$JAVA_HOME/bin:$SIDDHISDK_HOME/bin:$PATH
 
 # Copia código para a pasta do usuário
 COPY . /home/gaia_user/app
+COPY data /home/gaia_user/app/data
 
 # Muda permissões para o usuário gaia_user
 RUN chown -R gaia_user:gaia_user /home/gaia_user
@@ -26,7 +27,5 @@ RUN python3 -m venv venv \
     && ./venv/bin/pip install --upgrade pip \
     && ./venv/bin/pip install -r app/requirements.txt
 
-# Executa a aplicação
-# CMD ["./venv/bin/python", "app/main.py"]
 # Executa a aplicação
 CMD ["./venv/bin/python", "app/app.py"]
